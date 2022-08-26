@@ -19,10 +19,12 @@ type UserStat struct {
 	Animation   int    `db:"animation"`
 	Photo       int    `db:"photo"`
 	Username    string `db:"username"`
+	Firstname   string `db:"firstname"`
+	Lastname    string `db:"lastname"`
 }
 
 func (us *UserStat) ToString() string {
-	str := fmt.Sprintf("Стастика пользователя @%s\n\n"+
+	str := fmt.Sprintf("Стастика пользователя %s %s (@%s)\n\n"+
 		"Кол-во сообщений: 	%d\n"+
 		"Кол-во стикеров: 	%d\n"+
 		"Кол-во голосовых: 	%d\n"+
@@ -32,7 +34,8 @@ func (us *UserStat) ToString() string {
 		"Кол-во доков: 		%d\n"+
 		"Кол-во гифок: 		%d\n"+
 		"Кол-во фото:		%d\n",
-		us.Username, us.TotalMsgCount(), us.Sticker, us.Voice, us.Audio, us.Video, us.VideoNote, us.Doc, us.Animation, us.Photo)
+		us.Firstname, us.Lastname, us.Username,
+		us.TotalMsgCount(), us.Sticker, us.Voice, us.Audio, us.Video, us.VideoNote, us.Doc, us.Animation, us.Photo)
 	return str
 }
 
