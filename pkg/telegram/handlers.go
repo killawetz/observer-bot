@@ -22,8 +22,9 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 		return b.handleMyStatCommand(message)
 	case topStat:
 		return b.handleTopStatCommand(message)
+	default:
+		return b.handleMessage(message)
 	}
-	return nil
 }
 
 func (b *Bot) handleMessage(message *tgbotapi.Message) error {
@@ -72,7 +73,7 @@ func (b *Bot) handleMessage(message *tgbotapi.Message) error {
 
 func (b *Bot) handleMyStatCommand(message *tgbotapi.Message) error {
 
-	query := `SELECT cu.*, u.username
+	query := `SELECT cu.*, u.username, u.firstname, u.lastname
 	from chat_users cu inner join users u on cu.member_id = u.id
 	where chat_id = $1 and member_id = $2`
 
@@ -103,7 +104,7 @@ func (b *Bot) handleMyStatCommand(message *tgbotapi.Message) error {
 
 func (b *Bot) handleTopStatCommand(message *tgbotapi.Message) error {
 	var us []*UserStat
-	query := `SELECT cu.*, u.username
+	query := `SELECT cu.*, u.username, u.firstname, u.lastname
 			FROM chat_users cu
 			inner join users u on cu.member_id = u.id
 			where chat_id = $1`
@@ -120,13 +121,15 @@ func (b *Bot) handleTopStatCommand(message *tgbotapi.Message) error {
 	sb.WriteString("Топ писак:\n")
 
 	for i, el := range us {
-		str := fmt.Sprintf("`%d`. %s: `%d` сообщений\n", i+1, el.Username, el.TotalMsgCount())
+		str := fmt.Sprintf("%d. %s (%s): %d сообщений\n", i+1, el.Firstname, el.Username, el.TotalMsgCount())
 		sb.WriteString(str)
 	}
 
 	msg := tgbotapi.NewMessage(message.Chat.ID, sb.String())
-	msg.ParseMode = "Markdown"
 
-	b.API.Send(msg)
+	_, err = b.API.Send(msg)
+	if err != nil {
+		fmt.Println("Ошибка при отправке ответа на /topstat", err)
+	}
 	return nil
 }
