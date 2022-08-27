@@ -1,7 +1,7 @@
 module github.com/killawetz/observer-bot
 
-// +heroku goVersion go1.19
-go 1.19
+// +heroku goVersion go1.18
+go 1.18
 
 require (
 	github.com/georgysavva/scany v1.1.0
